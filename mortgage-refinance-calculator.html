@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Mortgage Refinance Calculator | US Mortgage Hub</title>
+    <meta content="Calculate your mortgage refinance break-even point. Find exactly when your monthly savings will eclipse your closing costs." name="description"/>
+    <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+    <nav>
+        <a class="logo" href="index.html">USMortgage<span>Hub</span></a>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="conventional-mortgage-calculator.html">Conventional</a>
+            <a href="fha-loan-calculator.html">FHA Loan</a>
+            <a href="va-loan-calculator.html">VA Loan</a>
+            <a class="active-nav" href="mortgage-refinance-calculator.html">Refinance</a>
+            <a href="mortgage-tax-deduction.html" style="color: #fcd34d;">Tax Benefits</a>
+            <a href="market-updates.html">Market Updates</a>
+        </div>
+    </nav>
+
+    <div class="wrapper">
+        <div class="calc-card">
+            <div class="calc-inputs">
+                <h2>Refinance &amp; Break-Even Calculator</h2>
+                
+                <div class="input-group">
+                    <label>Current Remaining Principal Balance</label>
+                    <div class="input-wrapper">
+                        <span class="input-icon">$</span>
+                        <input id="ref_balance" oninput="calculateRefinance()" type="number" value="380000"/>
+                    </div>
+                </div>
+                
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
+                    <div class="input-group">
+                        <label>Current Interest Rate</label>
+                        <div class="input-wrapper">
+                            <input id="ref_oldRate" oninput="calculateRefinance()" step="0.01" type="number" value="7.5"/>
+                            <span class="input-icon" style="left:auto; right:15px; color: var(--primary);">%</span>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label>Remaining Term (Years)</label>
+                        <input id="ref_oldTerm" oninput="calculateRefinance()" type="number" value="28"/>
+                    </div>
+                </div>
+                
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
+                    <div class="input-group">
+                        <label>Target Refinance Rate</label>
+                        <div class="input-wrapper">
+                            <input id="ref_newRate" oninput="calculateRefinance()" step="0.01" type="number" value="6.125"/>
+                            <span class="input-icon" style="left:auto; right:15px; color: var(--primary);">%</span>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label>Target Refinance Term</label>
+                        <select id="ref_newTerm" onchange="calculateRefinance()">
+                            <option value="30">30 Years Fixed</option>
+                            <option value="20">20 Years Fixed</option>
+                            <option value="15">15 Years Fixed</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label>Estimated Closing Costs (Lender Fees, Title, Appraisal)</label>
+                    <div class="input-wrapper">
+                        <span class="input-icon">$</span>
+                        <input id="ref_closingCosts" oninput="calculateRefinance()" type="number" value="8500"/>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="calc-results" style="background: #1e293b;">
+                <h3>Estimated Financial Impact</h3>
+                <div class="result-value" id="ref_savings" style="color:#10b981;">$000</div>
+                <p style="margin-top: -20px; margin-bottom: 20px; color: #cbd5e1; font-weight: 500;">Monthly Cash Flow Savings</p>
+                
+                <div class="result-breakdown">
+                    <div class="breakdown-item">
+                        <span>Old P&amp;I Payment</span>
+                        <span class="b-val" id="ref_oldPayment">$0,000</span>
+                    </div>
+                    <div class="breakdown-item" style="color: #60a5fa; border-bottom: none;">
+                        <span>New P&amp;I Payment</span>
+                        <span class="b-val" id="ref_newPayment" style="color: #60a5fa;">$0,000</span>
+                    </div>
+                </div>
+                
+                <div id="ref_breakEvenRow" style="background: white; color: var(--primary); padding: 20px; border-radius: 10px; margin-top: 25px; width: 100%; max-width: 350px; box-sizing: border-box;">
+                    <div style="font-size: 0.9rem; font-weight: 700; text-transform: uppercase; color: #64748b; margin-bottom: 5px;">Break-Even Timeline</div>
+                    <div style="font-size: 2.2rem; font-weight: 800; color: var(--accent);"><span id="ref_breakEvenMonths">0</span> Months</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="seo-article">
+            <div class="article-header">
+                <h1>Strategic Mortgage Refinancing: Calculating the Ultimate Break-Even Point</h1>
+                <div class="author-meta">Expert methodology on mitigating severe closing costs and optimizing amortization timelines in the US market.</div>
+            </div>
+
+            <p>In the highly dynamic and ever-shifting United States financial market, a residential mortgage should never be viewed as a static, immovable lifelong contract. It is a highly malleable financial instrument that should be aggressively and actively managed. When broader macroeconomic factors drive bond yields down, consumer mortgage interest rates naturally follow suit. This creates a massive, highly lucrative window of opportunity for homeowners to restructure their massive debt, radically lower their monthly overhead, or extract hundreds of thousands of dollars in accrued equity. However, the decision to refinance is rarely as simple as blindly chasing a lower interest rate on a billboard. The complex transaction carries significant financial friction in the form of heavy closing costs, making accurate mathematical analysis via a dedicated break-even calculator absolutely mandatory for any prudent homeowner.</p>
+
+            <h2>Deconstructing the Break-Even Mathematical Analysis</h2>
+            <p>The core, fundamental function of this analytical tool is to calculate your exact Break-Even Point. Refinancing a home involves initiating a brand-new, completely fresh mortgage contract to pay off and liquidate the existing one. Because it is a completely new financial transaction, you are subjected to a completely new round of closing costs. These costs typically range anywhere from 2% to 5% of your total remaining loan balance and include severe, unavoidable expenses such as massive lender origination fees, required appraisal costs, rigorous title search and insurance policies, and local government recording taxes.</p>
+            
+            <p>The highly coveted break-even point is the exact mathematical moment in time where the accumulated monthly savings from your new, lower interest rate completely eclipse the massive upfront closing costs you paid to secure the loan in the first place. The foundational formula is straightforward: Total Closing Costs divided by Monthly Payment Savings equals the Break-Even Point in Months.</p>
+            
+            <p>For a highly specific example, if restructuring your loan saves you exactly $300 per month, but costs a staggering $6,000 in mandatory closing fees, your mathematical break-even point is exactly 20 months. If you actively plan to sell the property or move out of the state within the next year, refinancing is a massive net negative financial decision. You will absolutely lose money on the transaction. Conversely, if this is your determined "forever home," successfully passing the 20-month mark means every single subsequent month is pure, positive cash flow injected back into your family budget. Our incredibly fast calculator executes this complex analysis instantly, providing you with the crystal-clear clarity needed to make a sound, incredibly data-driven financial decision.</p>
+        </div>
+    </div>
+
+    <footer>
+        <a class="footer-logo" href="index.html">USMortgage<span>Hub</span></a>
+        <div class="nav-links" style="justify-content: center; margin: 30px 0;">
+            <a href="about-us.html">About Us</a>
+            <a href="privacy-policy.html">Privacy Policy</a>
+            <a href="terms.html">Terms of Service</a>
+            <a href="disclaimer.html">Disclaimer</a>
+            <a href="contact-us.html">Contact Us</a>
+        </div>
+        <div class="legal-text">
+            The extensive calculations, complex scenarios, and financial estimations provided by this software platform are designed strictly for educational and informational purposes only. They absolutely do not constitute a binding offer of credit, a formal commitment to lend, or certified financial, legal, or tax advice. Lending guidelines established by the FHFA, FHA, the VA, and the IRS are subject to immediate modification by federal legislative action without notice. Users must consult with a state-licensed mortgage originator, a Certified Public Accountant (CPA), or a Certified Financial Planner (CFP) prior to executing any binding real estate contract or massive debt restructuring agreement.
+            <br/><br/>
+            &copy; 2026 US Mortgage Hub. All rights reserved.
+        </div>
+    </footer>
+
+    <script>
+        function calculatePI(P, r_annual, n_years) {
+            if (P <= 0 || r_annual <= 0 || n_years <= 0) return 0;
+            let r = (r_annual / 100) / 12, n = n_years * 12;
+            return P * (r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1);
+        }
+        function calculateRefinance() {
+            let balance = parseFloat(document.getElementById('ref_balance').value) || 0;
+            let oldRate = parseFloat(document.getElementById('ref_oldRate').value) || 0;
+            let oldTerm = parseFloat(document.getElementById('ref_oldTerm').value) || 0;
+            let newRate = parseFloat(document.getElementById('ref_newRate').value) || 0;
+            let newTerm = parseInt(document.getElementById('ref_newTerm').value) || 30;
+            let closingCosts = parseFloat(document.getElementById('ref_closingCosts').value) || 0;
+            let oldPayment = calculatePI(balance, oldRate, oldTerm);
+            let newPayment = calculatePI(balance, newRate, newTerm);
+            let monthlySavings = oldPayment - newPayment;
+            if (monthlySavings > 0) {
+                let breakEvenMonths = Math.ceil(closingCosts / monthlySavings);
+                document.getElementById('ref_savings').style.color = '#10b981';
+                document.getElementById('ref_savings').innerText = "$" + monthlySavings.toLocaleString('en-US', { maximumFractionDigits: 0 });
+                document.getElementById('ref_breakEvenMonths').innerText = breakEvenMonths;
+                document.getElementById('ref_breakEvenRow').style.display = 'block';
+            } else {
+                document.getElementById('ref_savings').style.color = '#ef4444';
+                document.getElementById('ref_savings').innerText = "-$" + Math.abs(monthlySavings).toLocaleString('en-US', { maximumFractionDigits: 0 });
+                document.getElementById('ref_breakEvenMonths').innerText = "N/A";
+            }
+            document.getElementById('ref_oldPayment').innerText = "$" + oldPayment.toFixed(2);
+            document.getElementById('ref_newPayment').innerText = "$" + newPayment.toFixed(2);
+        }
+        calculateRefinance();
+    </script>
+</body>
+</html>

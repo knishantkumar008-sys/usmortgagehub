@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>VA Loan Calculator | US Mortgage Hub</title>
+    <meta content="Calculate your VA loan payment with zero-down financing. Includes dynamic VA Funding Fee based on service status and usage history." name="description"/>
+    <link rel="stylesheet" href="style.css"/>
+    <script src="https://www.gstatic.com/charts/loader.js"></script>
+</head>
+<body>
+    <nav>
+        <a class="logo" href="index.html">USMortgage<span>Hub</span></a>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="conventional-mortgage-calculator.html">Conventional</a>
+            <a href="fha-loan-calculator.html">FHA Loan</a>
+            <a class="active-nav" href="va-loan-calculator.html">VA Loan</a>
+            <a href="mortgage-refinance-calculator.html">Refinance</a>
+            <a href="mortgage-tax-deduction.html" style="color: #fcd34d;">Tax Benefits</a>
+            <a href="market-updates.html">Market Updates</a>
+        </div>
+    </nav>
+
+    <div class="wrapper">
+        <div class="calc-card">
+            <div class="calc-inputs">
+                <h2>VA Mortgage Calculator</h2>
+                
+                <div class="state-predictor">
+                    <label>1-Click US State Averages (Auto-fills Taxes &amp; Insurance)</label>
+                    <select id="va_stateSelect" onchange="applyStateAverages('va')">
+                        <option value="national">National Average (Default)</option>
+                        <option value="TX">Texas (High Property Tax)</option>
+                        <option value="CA">California (High Insurance, Lower Tax %)</option>
+                        <option value="FL">Florida (High Insurance Risk Area)</option>
+                        <option value="NY">New York (High Property Tax)</option>
+                    </select>
+                </div>
+                
+                <div class="input-group">
+                    <label>Total Home Purchase Price</label>
+                    <div class="input-wrapper">
+                        <span class="input-icon">$</span>
+                        <input id="va_homePrice" oninput="calculateVA()" type="number" value="350000"/>
+                    </div>
+                </div>
+                
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
+                    <div class="input-group">
+                        <label>Down Payment Amount</label>
+                        <div class="input-wrapper">
+                            <span class="input-icon">$</span>
+                            <input id="va_downPaymentAmt" oninput="updateVAbyAmt()" type="number" value="0"/>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label>Down Payment (Typically 0%)</label>
+                        <div class="input-wrapper">
+                            <input id="va_downPaymentPct" oninput="updateVAbyPct()" type="number" value="0"/>
+                            <span class="input-icon" style="left:auto; right:15px; color: var(--primary);">%</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
+                    <div class="input-group">
+                        <label>VA Interest Rate</label>
+                        <div class="input-wrapper">
+                            <input id="va_interestRate" oninput="calculateVA()" step="0.01" type="number" value="5.99"/>
+                            <span class="input-icon" style="left:auto; right:15px; color: var(--primary);">%</span>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label>Loan Amortization Term</label>
+                        <select id="va_loanTerm" onchange="calculateVA()">
+                            <option value="30">30 Years Fixed</option>
+                            <option value="15">15 Years Fixed</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
+                    <div class="input-group">
+                        <label>Annual Property Taxes</label>
+                        <div class="input-wrapper">
+                            <span class="input-icon">$</span>
+                            <input id="va_propertyTax" oninput="calculateVA()" type="number" value="4200"/>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label>Annual Home Insurance</label>
+                        <div class="input-wrapper">
+                            <span class="input-icon">$</span>
+                            <input id="va_homeInsurance" oninput="calculateVA()" type="number" value="1400"/>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="input-group">
+                    <label>Monthly HOA Fees</label>
+                    <div class="input-wrapper">
+                        <span class="input-icon">$</span>
+                        <input id="va_hoaFee" oninput="calculateVA()" type="number" value="0"/>
+                    </div>
+                </div>
+                
+                <div class="input-group">
+                    <label>VA Funding Fee Status &amp; Usage</label>
+                    <select id="va_fundingFeeStatus" onchange="calculateVA()">
+                        <option value="first_0">First Time Use - 0% Down (2.15%)</option>
+                        <option value="first_5">First Time Use - 5% to 9.9% Down (1.50%)</option>
+                        <option value="first_10">First Time Use - 10%+ Down (1.25%)</option>
+                        <option value="sub_0">Subsequent Use - 0% Down (3.30%)</option>
+                        <option value="sub_5">Subsequent Use - 5% to 9.9% Down (1.50%)</option>
+                        <option value="sub_10">Subsequent Use - 10%+ Down (1.25%)</option>
+                        <option value="exempt">Exempt (Service-Connected Disability - 0%)</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="calc-results" style="background: #0f172a;">
+                <h3>VA Estimated Monthly Payment</h3>
+                <div class="result-value" id="va_totalPayment" style="color:#a78bfa;">$0,000</div>
+                
+                <div class="result-breakdown">
+                    <div class="breakdown-item">
+                        <span>Base Loan Amount</span>
+                        <span class="b-val" id="va_baseLoan">$0</span>
+                    </div>
+                    <div class="breakdown-item" style="color: #94a3b8; font-size: 0.9rem;">
+                        <span>+ Financed VA Funding Fee</span>
+                        <span class="b-val" id="va_ffAmount">$0</span>
+                    </div>
+                    <div class="breakdown-item" style="border-top: 1px solid rgba(255,255,255,0.2); padding-top: 15px;">
+                        <span><span class="dot dot-pi"></span>Principal &amp; Interest</span>
+                        <span class="b-val" id="va_piPayment">$0</span>
+                    </div>
+                    <div class="breakdown-item">
+                        <span><span class="dot dot-tax"></span>Property Taxes</span>
+                        <span class="b-val" id="va_taxPayment">$0</span>
+                    </div>
+                    <div class="breakdown-item">
+                        <span><span class="dot dot-ins"></span>Home Insurance</span>
+                        <span class="b-val" id="va_insPayment">$0</span>
+                    </div>
+                    <div class="breakdown-item">
+                        <span><span class="dot dot-hoa"></span>HOA Fees</span>
+                        <span class="b-val" id="va_hoaPayment">$0</span>
+                    </div>
+                    <div class="breakdown-item" style="border-bottom: none;">
+                        <span>Monthly Mortgage Insurance</span>
+                        <span class="b-val" style="color:#10b981;">$0 (None)</span>
+                    </div>
+                </div>
+                
+                <div class="insight-box">
+                    <div>Total Lifetime Interest Paid: <span id="va_totalInterest" style="color:#fca5a5;">$0</span></div>
+                    <div style="margin-bottom:0;">Estimated Loan Payoff Year: <span id="va_payoffYear" style="color:#60a5fa;">2056</span></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="premium-data-section" id="va_premium_data">
+            <div class="charts-grid">
+                <div class="chart-container">
+                    <h4>VA Monthly Payment Breakdown</h4>
+                    <div id="va_piechart" style="width: 100%; height: 250px;"></div>
+                </div>
+                <div class="chart-container">
+                    <h4>VA Equity Build Over Time</h4>
+                    <div id="va_linechart" style="width: 100%; height: 250px;"></div>
+                </div>
+            </div>
+            <div class="amortization-wrapper">
+                <h4>Yearly Amortization Schedule</h4>
+                <table class="amortization-table">
+                    <thead>
+                        <tr>
+                            <th>Year</th>
+                            <th>Beginning Balance</th>
+                            <th>Principal Paid</th>
+                            <th>Interest Paid</th>
+                            <th>Ending Balance</th>
+                        </tr>
+                    </thead>
+                    <tbody id="va_amortization_body"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="seo-article">
+            <div class="article-header">
+                <h1>Maximizing the Department of Veterans Affairs (VA) Home Loan Benefit</h1>
+                <div class="author-meta">In-depth analysis of VA Entitlement, Funding Fees, and Zero-Down financing mechanisms for US Veterans.</div>
+            </div>
+
+            <p>The VA Home Loan Guaranty program stands resolutely as one of the absolute most powerful and transformational wealth-building benefits offered to those brave individuals who have served in the United States military. Established originally under the massive legislative umbrella of the original GI Bill, the federal program was meticulously designed to smoothly integrate returning service members into the booming civilian economy by providing unparalleled, unprecedented access to property ownership. Today, the modern program is administered directly by the Department of Veterans Affairs and remains the premier mortgage product in the entire US market, consistently outperforming both conventional and FHA loans in almost every single metric regarding long-term affordability and underwriting leniency.</p>
+
+            <p>This specialized calculator is purpose-built from the ground up to navigate the highly unique mathematical environment of a VA loan. It is fundamentally essential for active-duty personnel, retired veterans, and eligible surviving spouses to utilize a dedicated tool like this one, as the complete, total absence of monthly mortgage insurance combined with the highly complex financing mechanisms of the VA Funding Fee creates a unique amortization schedule that standard internet calculators simply cannot replicate accurately.</p>
+
+            <h2>The Incredible Anatomy of the Zero-Down Benefit</h2>
+            <p>The core defining characteristic and primary draw of the VA home loan is the unparalleled ability to legally purchase a primary residence in the United States with absolutely zero required down payment, without any hard legislative restriction on the maximum purchase price (provided the veteran retains full VA entitlement and the private lender approves the massive loan amount based on verified income and credit history). In the standard conventional market, a zero-down loan is practically non-existent, and even a minimal 3% down payment requires the borrower to pay punishing, expensive monthly Private Mortgage Insurance (PMI) premiums.</p>
+            
+            <p>The VA completely and utterly eliminates the need for monthly mortgage insurance. They brilliantly accomplish this by federally guaranteeing a specific portion of the loan&#8212;historically calculated at approximately 25% of the total loan amount&#8212;directly to the private lending institution (such as Veterans United, Navy Federal Credit Union, or USAA). Because the private lender holds this ironclad federal guarantee, their corporate risk is massively mitigated, allowing them to confidently offer highly competitive interest rates that are frequently lower than current conventional market averages. The mathematical compounding impact of securing a low base interest rate while paying absolutely zero monthly PMI drastically lowers the veteran's debt-to-income ratio, allowing them to legally afford significantly more house for the exact same monthly payment.</p>
+
+            <h2>Accurately Calculating the Required VA Funding Fee</h2>
+            <p>To definitively keep the VA loan program financially self-sustaining for future generations of service members and to offset the massive taxpayer cost of the federal guaranty, the federal government legally assesses a one-time financial charge universally known as the VA Funding Fee. Comprehending exactly how this specific fee scales is critical to accurate, long-term financial planning, which is precisely why our calculator strictly requires you to honestly declare your precise usage status via the dropdown menu.</p>
+
+            <p>The exact percentage of the funding fee is highly variable. It is determined exclusively by two primary factors: whether this is your very first time utilizing your VA home loan benefit (classified as First Time Use) or if you have leveraged it previously in your life (classified as Subsequent Use), and the exact size of your cash down payment. While a cash down payment is never legally required, choosing to make one will actively and aggressively reduce the funding fee percentage.</p>
+        </div>
+    </div>
+
+    <footer>
+        <a class="footer-logo" href="index.html">USMortgage<span>Hub</span></a>
+        <div class="nav-links" style="justify-content: center; margin: 30px 0;">
+            <a href="about-us.html">About Us</a>
+            <a href="privacy-policy.html">Privacy Policy</a>
+            <a href="terms.html">Terms of Service</a>
+            <a href="disclaimer.html">Disclaimer</a>
+            <a href="contact-us.html">Contact Us</a>
+        </div>
+        <div class="legal-text">
+            The extensive calculations, complex scenarios, and financial estimations provided by this software platform are designed strictly for educational and informational purposes only. They absolutely do not constitute a binding offer of credit, a formal commitment to lend, or certified financial, legal, or tax advice. Lending guidelines established by the FHFA, FHA, the VA, and the IRS are subject to immediate modification by federal legislative action without notice. Users must consult with a state-licensed mortgage originator, a Certified Public Accountant (CPA), or a Certified Financial Planner (CFP) prior to executing any binding real estate contract or massive debt restructuring agreement.
+            <br/><br/>
+            &copy; 2026 US Mortgage Hub. All rights reserved.
+        </div>
+    </footer>
+
+    <script>
+        const stateData = { "national": { tax: 4200, ins: 1400 }, "TX": { tax: 7500, ins: 2500 }, "CA": { tax: 4200, ins: 3200 }, "FL": { tax: 4500, ins: 4500 }, "NY": { tax: 8500, ins: 1900 } };
+        function applyStateAverages(prefix) {
+            let data = stateData[document.getElementById(prefix + '_stateSelect').value] || stateData["national"];
+            document.getElementById(prefix + '_propertyTax').value = data.tax;
+            document.getElementById(prefix + '_homeInsurance').value = data.ins;
+            calculateVA();
+        }
+        function calculatePI(P, r_annual, n_years) {
+            if (P <= 0 || r_annual <= 0 || n_years <= 0) return 0;
+            let r = (r_annual / 100) / 12, n = n_years * 12;
+            return P * (r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1);
+        }
+        function updateVAbyAmt() {
+            let price = parseFloat(document.getElementById('va_homePrice').value) || 0;
+            let amt = parseFloat(document.getElementById('va_downPaymentAmt').value) || 0;
+            if (price > 0) document.getElementById('va_downPaymentPct').value = ((amt / price) * 100).toFixed(2);
+            calculateVA();
+        }
+        function updateVAbyPct() {
+            let price = parseFloat(document.getElementById('va_homePrice').value) || 0;
+            let pct = parseFloat(document.getElementById('va_downPaymentPct').value) || 0;
+            document.getElementById('va_downPaymentAmt').value = ((price * pct) / 100).toFixed(0);
+            calculateVA();
+        }
+        function calculateVA() {
+            let price = parseFloat(document.getElementById('va_homePrice').value) || 0;
+            let dpAmt = parseFloat(document.getElementById('va_downPaymentAmt').value) || 0;
+            let rate = parseFloat(document.getElementById('va_interestRate').value) || 0;
+            let years = parseInt(document.getElementById('va_loanTerm').value) || 30;
+            let annualTax = parseFloat(document.getElementById('va_propertyTax').value) || 0;
+            let annualIns = parseFloat(document.getElementById('va_homeInsurance').value) || 0;
+            let monthlyHoa = parseFloat(document.getElementById('va_hoaFee').value) || 0;
+            let ffStatus = document.getElementById('va_fundingFeeStatus').value;
+            let baseLoan = Math.max(price - dpAmt, 0);
+            let ffMap = { first_0: 0.0215, first_5: 0.0150, first_10: 0.0125, sub_0: 0.0330, sub_5: 0.0150, sub_10: 0.0125, exempt: 0 };
+            let ffAmount = baseLoan * (ffMap[ffStatus] || 0);
+            let totalLoan = baseLoan + ffAmount;
+            let monthlyPI = calculatePI(totalLoan, rate, years);
+            let monthlyTax = annualTax / 12, monthlyIns = annualIns / 12;
+            let totalMonthly = monthlyPI + monthlyTax + monthlyIns + monthlyHoa;
+            let balance = totalLoan, yearlyData = [];
+            for (let y = 1; y <= years; y++) {
+                let yearInterest = 0, yearPrincipal = 0, startBalance = balance;
+                for (let m = 1; m <= 12; m++) {
+                    let intMonth = balance * ((rate / 100) / 12);
+                    let prinMonth = monthlyPI - intMonth;
+                    balance = Math.max(balance - prinMonth, 0);
+                    yearInterest += intMonth; yearPrincipal += prinMonth;
+                }
+                yearlyData.push({ year: y, startBalance, principalPaid: yearPrincipal, interestPaid: yearInterest, balance });
+            }
+            let totalLifetimeInterest = Math.max((monthlyPI * years * 12) - totalLoan, 0);
+            let payoffYear = new Date().getFullYear() + years;
+            document.getElementById('va_totalPayment').innerText = "$" + totalMonthly.toLocaleString('en-US', { maximumFractionDigits: 0 });
+            document.getElementById('va_baseLoan').innerText = "$" + baseLoan.toLocaleString('en-US', { maximumFractionDigits: 0 });
+            document.getElementById('va_ffAmount').innerText = "$" + ffAmount.toLocaleString('en-US', { maximumFractionDigits: 0 });
+            document.getElementById('va_piPayment').innerText = "$" + monthlyPI.toFixed(2);
+            document.getElementById('va_taxPayment').innerText = "$" + monthlyTax.toFixed(2);
+            document.getElementById('va_insPayment').innerText = "$" + monthlyIns.toFixed(2);
+            document.getElementById('va_hoaPayment').innerText = "$" + monthlyHoa.toFixed(2);
+            document.getElementById('va_totalInterest').innerText = "$" + totalLifetimeInterest.toLocaleString('en-US', { maximumFractionDigits: 0 });
+            document.getElementById('va_payoffYear').innerText = payoffYear;
+            if (googleChartsLoaded) drawPremiumCharts('va', monthlyPI, monthlyTax, monthlyIns, monthlyHoa, 0, yearlyData);
+        }
+        let googleChartsLoaded = false;
+        google.charts.load('current', { 'packages': ['corechart'] });
+        google.charts.setOnLoadCallback(function () { googleChartsLoaded = true; calculateVA(); });
+        function drawPremiumCharts(prefix, pi, tax, ins, hoa, pmi, yearlyData) {
+            document.getElementById(prefix + '_premium_data').style.display = 'block';
+            let pieData = google.visualization.arrayToDataTable([['Category', 'Amount'], ['Principal & Interest', pi], ['Property Tax', tax], ['Home Insurance', ins], ['HOA Fees', hoa], ['PMI / MIP', pmi]]);
+            new google.visualization.PieChart(document.getElementById(prefix + '_piechart')).draw(pieData, { pieHole: 0.5, colors: ['#3b82f6', '#10b981', '#8b5cf6', '#f59e0b', '#ef4444'], legend: 'none', chartArea: { width: '90%', height: '90%' } });
+            let lineData = new google.visualization.DataTable();
+            lineData.addColumn('number', 'Year'); lineData.addColumn('number', 'Balance');
+            lineData.addRows(yearlyData.map(d => [d.year, d.balance]));
+            new google.visualization.LineChart(document.getElementById(prefix + '_linechart')).draw(lineData, { colors: ['#a78bfa'], legend: 'none', hAxis: { title: 'Years' }, vAxis: { title: 'Remaining Balance ($)' }, chartArea: { width: '80%', height: '70%' } });
+            document.getElementById(prefix + '_amortization_body').innerHTML = yearlyData.map(d => `<tr><td>Year ${d.year}</td><td>$${d.startBalance.toLocaleString('en-US',{maximumFractionDigits:0})}</td><td style="color:#10b981;">$${d.principalPaid.toLocaleString('en-US',{maximumFractionDigits:0})}</td><td style="color:#ef4444;">$${d.interestPaid.toLocaleString('en-US',{maximumFractionDigits:0})}</td><td style="font-weight:600;">$${d.balance.toLocaleString('en-US',{maximumFractionDigits:0})}</td></tr>`).join('');
+        }
+    </script>
+</body>
+</html>

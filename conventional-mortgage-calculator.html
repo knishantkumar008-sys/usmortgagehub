@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Conventional Mortgage Calculator | US Mortgage Hub</title>
+    <meta content="Calculate your true PITI with our advanced Conventional Mortgage Calculator. Includes PMI detection, Escrow, Amortization Schedule, and interactive charts." name="description"/>
+    <link rel="stylesheet" href="style.css"/>
+    <script src="https://www.gstatic.com/charts/loader.js"></script>
+</head>
+<body>
+    <nav>
+        <a class="logo" href="index.html">USMortgage<span>Hub</span></a>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a class="active-nav" href="conventional-mortgage-calculator.html">Conventional</a>
+            <a href="fha-loan-calculator.html">FHA Loan</a>
+            <a href="va-loan-calculator.html">VA Loan</a>
+            <a href="mortgage-refinance-calculator.html">Refinance</a>
+            <a href="mortgage-tax-deduction.html" style="color: #fcd34d;">Tax Benefits</a>
+            <a href="market-updates.html">Market Updates</a>
+        </div>
+    </nav>
+
+    <div class="wrapper">
+        <div class="calc-card">
+            <div class="calc-inputs">
+                <h2>Conventional Mortgage Calculator</h2>
+                
+                <div class="state-predictor">
+                    <label>1-Click US State Averages (Auto-fills Taxes &amp; Insurance)</label>
+                    <select id="conv_stateSelect" onchange="applyStateAverages('conv')">
+                        <option value="national">National Average (Default)</option>
+                        <option value="TX">Texas (High Property Tax)</option>
+                        <option value="CA">California (High Insurance, Lower Tax %)</option>
+                        <option value="FL">Florida (High Insurance Risk Area)</option>
+                        <option value="NY">New York (High Property Tax)</option>
+                    </select>
+                </div>
+                
+                <div class="input-group">
+                    <label>Total Home Purchase Price</label>
+                    <div class="input-wrapper">
+                        <span class="input-icon">$</span>
+                        <input id="conv_homePrice" oninput="calculateConventional()" type="number" value="450000"/>
+                    </div>
+                </div>
+                
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
+                    <div class="input-group">
+                        <label>Down Payment Amount</label>
+                        <div class="input-wrapper">
+                            <span class="input-icon">$</span>
+                            <input id="conv_downPaymentAmt" oninput="updateConvByAmt()" type="number" value="90000"/>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label>Down Payment Percentage</label>
+                        <div class="input-wrapper">
+                            <input id="conv_downPaymentPct" oninput="updateConvByPct()" type="number" value="20"/>
+                            <span class="input-icon" style="left:auto; right:15px; color: var(--primary);">%</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
+                    <div class="input-group">
+                        <label>Annual Interest Rate</label>
+                        <div class="input-wrapper">
+                            <input id="conv_interestRate" oninput="calculateConventional()" step="0.01" type="number" value="6.75"/>
+                            <span class="input-icon" style="left:auto; right:15px; color: var(--primary);">%</span>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label>Loan Amortization Term</label>
+                        <select id="conv_loanTerm" onchange="calculateConventional()">
+                            <option value="30">30 Years Fixed</option>
+                            <option value="20">20 Years Fixed</option>
+                            <option value="15">15 Years Fixed</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
+                    <div class="input-group">
+                        <label>Annual Property Taxes</label>
+                        <div class="input-wrapper">
+                            <span class="input-icon">$</span>
+                            <input id="conv_propertyTax" oninput="calculateConventional()" type="number" value="4800"/>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label>Annual Home Insurance</label>
+                        <div class="input-wrapper">
+                            <span class="input-icon">$</span>
+                            <input id="conv_homeInsurance" oninput="calculateConventional()" type="number" value="1800"/>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label>Monthly HOA Fees</label>
+                    <div class="input-wrapper">
+                        <span class="input-icon">$</span>
+                        <input id="conv_hoaFee" oninput="calculateConventional()" type="number" value="250"/>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="calc-results">
+                <h3>True Monthly PITI Output</h3>
+                <div class="result-value" id="conv_totalPayment">$0,000</div>
+                
+                <div class="result-breakdown">
+                    <div class="breakdown-item">
+                        <span><span class="dot dot-pi"></span>Principal &amp; Interest</span>
+                        <span class="b-val" id="conv_piPayment">$0</span>
+                    </div>
+                    <div class="breakdown-item">
+                        <span><span class="dot dot-tax"></span>Property Taxes</span>
+                        <span class="b-val" id="conv_taxPayment">$0</span>
+                    </div>
+                    <div class="breakdown-item">
+                        <span><span class="dot dot-ins"></span>Home Insurance</span>
+                        <span class="b-val" id="conv_insPayment">$0</span>
+                    </div>
+                    <div class="breakdown-item">
+                        <span><span class="dot dot-hoa"></span>HOA Fees</span>
+                        <span class="b-val" id="conv_hoaPayment">$0</span>
+                    </div>
+                    <div class="breakdown-item" id="conv_pmiRow" style="display:none; border-bottom: none;">
+                        <span><span class="dot dot-pmi"></span>Private Mortgage Insurance</span>
+                        <span class="b-val" id="conv_pmiPayment" style="color:#fca5a5;">$0</span>
+                    </div>
+                </div>
+
+                <div class="insight-box">
+                    <div>Total Lifetime Interest: <span id="conv_totalInterest" style="color:#fca5a5;">$0</span></div>
+                    <div style="margin-bottom:0;">Loan Payoff Year: <span id="conv_payoffYear" style="color:#60a5fa;">2056</span></div>
+                </div>
+                
+                <div class="pmi-alert" id="conv_alert">
+                    Lending Requirement: Because your down payment is below the 20% threshold, standard US lending guidelines enforce the addition of Private Mortgage Insurance (PMI).
+                </div>
+            </div>
+        </div>
+
+        <div class="premium-data-section" id="conv_premium_data">
+            <div class="charts-grid">
+                <div class="chart-container">
+                    <h4>Monthly Payment Breakdown</h4>
+                    <div id="conv_piechart" style="width: 100%; height: 250px;"></div>
+                </div>
+                <div class="chart-container">
+                    <h4>Loan Balance Over Time</h4>
+                    <div id="conv_linechart" style="width: 100%; height: 250px;"></div>
+                </div>
+            </div>
+            <div class="amortization-wrapper">
+                <h4>Yearly Amortization Schedule</h4>
+                <table class="amortization-table">
+                    <thead>
+                        <tr>
+                            <th>Year</th>
+                            <th>Beginning Balance</th>
+                            <th>Principal Paid</th>
+                            <th>Interest Paid</th>
+                            <th>Ending Balance</th>
+                        </tr>
+                    </thead>
+                    <tbody id="conv_amortization_body"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="seo-article">
+            <div class="article-header">
+                <h1>The Complete Guide to US Conventional Mortgages and True PITI Cost Analysis</h1>
+                <div class="author-meta">Expertly reviewed methodology based on Federal Housing Finance Agency (FHFA) standards for the United States real estate market.</div>
+            </div>
+
+            <p>Navigating the residential real estate market in the United States requires an uncompromising understanding of lending mechanics. The conventional mortgage remains the single most utilized financial instrument for purchasing real estate in the US, accounting for the vast majority of all transactions. Whether you are purchasing a primary residence in a high-density, expensive market like California, or securing a property in a rapidly growing state like Texas, grasping exactly how your monthly payment is structured is the absolute foundation of long-term financial stability.</p>
+            
+            <p>This comprehensive software tool developed by US Mortgage Hub goes far beyond simple addition and subtraction. It is engineered to emulate the exact underwriting standards used by major US banking institutions and local credit unions. By factoring in your specific down payment percentage, regional property tax burdens, state-specific homeowners insurance crisis rates, and strict Private Mortgage Insurance regulations, this platform provides a realistic view of your true Debt-to-Income (DTI) obligations.</p>
+
+            <h2>Deconstructing the Conventional Loan Infrastructure</h2>
+            <p>Within the infrastructure of the US banking system, a conventional loan is explicitly defined as a mortgage that is neither insured nor guaranteed by any federal government agency. Unlike FHA loans which are backed by the Department of Housing and Urban Development, or VA loans backed by the Department of Veterans Affairs, conventional loans are originated by private lenders. Once originated, the vast majority of these loans are subsequently sold to Government-Sponsored Enterprises (GSEs), most notably Fannie Mae and Freddie Mac.</p>
+            
+            <p>Because the federal government does not insure these loans against borrower default, private lenders enforce highly strict qualification parameters. These strict parameters are heavily influenced by your individual credit profile, functioning through a pricing mechanism known as Loan Level Price Adjustments (LLPAs). Your final interest rate is not merely based on broad economic trends, but on a specialized matrix that aggressively evaluates your FICO credit score against your total Loan-to-Value (LTV) ratio.</p>
+
+            <div class="content-box">
+                <h4>Conforming vs. Non-Conforming (Jumbo) Financial Limits</h4>
+                <p>Conventional loans in the United States are categorized into two primary classifications. Conforming loans adhere strictly to the maximum loan limits established on an annual basis by the FHFA. For the majority of counties in the United States, this limit dictates the maximum principal amount a lender can issue while still being legally able to sell the loan to Fannie Mae or Freddie Mac. If your necessary loan amount exceeds this baseline, which is incredibly common in major metropolitan areas with inflated housing valuations, your loan becomes classified as a Non-Conforming or Jumbo loan. Jumbo loans routinely carry far more stringent underwriting requirements, including larger mandatory down payments, higher minimum credit scores, and extensive post-closing cash reserve verifications.</p>
+            </div>
+
+            <h2>Understanding Your True Housing Cost: The Comprehensive PITI Framework</h2>
+            <p>When assessing how much house you can safely afford, looking solely at the principal and interest calculations is a fundamental error that leads thousands of homebuyers into severe financial distress every year. Mortgage underwriters do not evaluate your capacity to repay based on the loan alone; they evaluate you based on PITI: Principal, Interest, Taxes, and Insurance. Furthermore, in the modern US housing market, Homeowners Association (HOA) fees have become a dominant factor. Our US Mortgage Hub software demands that you account for all these variables to generate a safe, actionable financial projection.</p>
+
+            <h3>1. Principal and Interest Amortization Math</h3>
+            <p>The core foundation of your mortgage payment is determined by a complex amortization schedule, which you can visually analyze in our premium tables above. This specific mathematical formula ensures that your loan is completely liquidated at the exact end of the specified term, whether that is 15 years or 30 years. In the early years of a standard 30-year fixed-rate mortgage, the overwhelming majority of your monthly payment is allocated toward paying the interest charges generated by the lender, with only a minuscule fraction actually reducing the principal balance. As the loan matures over the decades, this ratio slowly inverses. This front-loaded interest structure explains why American homeowners build true equity very slowly during the first five to seven years of homeownership.</p>
+
+            <h3>2. The Role of Escrow Accounts and State Property Taxes</h3>
+            <p>Real estate property taxation in the United States is a highly localized phenomenon, assessed exclusively at the county and municipal levels rather than the federal level. A homeowner residing in New Jersey or Illinois may pay exponentially more in annual property taxes than a homeowner with a similarly priced property in Alabama or Nevada. To ensure these critical tax obligations are definitively met, US lenders establish an escrow account. A specific portion of your estimated annual property tax is collected every single month and held in this account. When the massive tax bill becomes due to the county, the lender pays the municipality on your behalf. Utilizing our state predictor tool to accurately estimate your anticipated local property taxes is vital, as underestimating these taxes can result in a sudden, severe increase in your monthly payment due to an escrow shortage analysis.</p>
+
+            <h3>3. The Homeowners Insurance Crisis in Specific States</h3>
+            <p>Homeowners insurance is a non-negotiable requirement for obtaining a mortgage in the United States. In recent years, catastrophic weather events and regulatory challenges have created massive insurance crises in specific regions. Homeowners in coastal Florida face extreme premiums due to hurricane risks, while residents in California face rapidly escalating costs due to widespread wildfire exposure. Our calculator includes a dedicated field for annual home insurance because assuming a low national average could completely destroy your monthly budget if you are purchasing in a high-risk state.</p>
+        </div>
+    </div>
+
+    <footer>
+        <a class="footer-logo" href="index.html">USMortgage<span>Hub</span></a>
+        <div class="nav-links" style="justify-content: center; margin: 30px 0;">
+            <a href="about-us.html">About Us</a>
+            <a href="privacy-policy.html">Privacy Policy</a>
+            <a href="terms.html">Terms of Service</a>
+            <a href="disclaimer.html">Disclaimer</a>
+            <a href="contact-us.html">Contact Us</a>
+        </div>
+        <div class="legal-text">
+            The extensive calculations, complex scenarios, and financial estimations provided by this software platform are designed strictly for educational and informational purposes only. They absolutely do not constitute a binding offer of credit, a formal commitment to lend, or certified financial, legal, or tax advice. Lending guidelines established by the FHFA, FHA, the VA, and the IRS are subject to immediate modification by federal legislative action without notice. Users must consult with a state-licensed mortgage originator, a Certified Public Accountant (CPA), or a Certified Financial Planner (CFP) prior to executing any binding real estate contract or massive debt restructuring agreement.
+            <br/><br/>
+            &copy; 2026 US Mortgage Hub. All rights reserved.
+        </div>
+    </footer>
+
+    <script>
+        const stateData = {
+            "national": { tax: 4800, ins: 1800 },
+            "TX": { tax: 7500, ins: 2500 },
+            "CA": { tax: 4200, ins: 3200 },
+            "FL": { tax: 4500, ins: 4500 },
+            "NY": { tax: 8500, ins: 1900 }
+        };
+        function applyStateAverages(prefix) {
+            let stateCode = document.getElementById(prefix + '_stateSelect').value;
+            let data = stateData[stateCode] || stateData["national"];
+            document.getElementById(prefix + '_propertyTax').value = data.tax;
+            document.getElementById(prefix + '_homeInsurance').value = data.ins;
+            calculateConventional();
+        }
+        function calculatePI(P, r_annual, n_years) {
+            if (P <= 0 || r_annual <= 0 || n_years <= 0) return 0;
+            let r = (r_annual / 100) / 12;
+            let n = n_years * 12;
+            return P * (r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1);
+        }
+        function updateConvByAmt() {
+            let price = parseFloat(document.getElementById('conv_homePrice').value) || 0;
+            let amt = parseFloat(document.getElementById('conv_downPaymentAmt').value) || 0;
+            if (price > 0) document.getElementById('conv_downPaymentPct').value = ((amt / price) * 100).toFixed(2);
+            calculateConventional();
+        }
+        function updateConvByPct() {
+            let price = parseFloat(document.getElementById('conv_homePrice').value) || 0;
+            let pct = parseFloat(document.getElementById('conv_downPaymentPct').value) || 0;
+            document.getElementById('conv_downPaymentAmt').value = ((price * pct) / 100).toFixed(0);
+            calculateConventional();
+        }
+        function calculateConventional() {
+            let price = parseFloat(document.getElementById('conv_homePrice').value) || 0;
+            let dpAmt = parseFloat(document.getElementById('conv_downPaymentAmt').value) || 0;
+            let dpPct = parseFloat(document.getElementById('conv_downPaymentPct').value) || 0;
+            let rate = parseFloat(document.getElementById('conv_interestRate').value) || 0;
+            let years = parseInt(document.getElementById('conv_loanTerm').value) || 30;
+            let annualTax = parseFloat(document.getElementById('conv_propertyTax').value) || 0;
+            let annualIns = parseFloat(document.getElementById('conv_homeInsurance').value) || 0;
+            let monthlyHoa = parseFloat(document.getElementById('conv_hoaFee').value) || 0;
+            let principal = Math.max(price - dpAmt, 0);
+            let monthlyPI = calculatePI(principal, rate, years);
+            let monthlyTax = annualTax / 12;
+            let monthlyIns = annualIns / 12;
+            let monthlyPMI = 0;
+            if (dpPct < 20 && principal > 0) {
+                monthlyPMI = (principal * 0.0065) / 12;
+                document.getElementById('conv_pmiRow').style.display = 'flex';
+                document.getElementById('conv_pmiPayment').innerText = "$" + monthlyPMI.toFixed(2);
+                document.getElementById('conv_alert').style.display = 'block';
+            } else {
+                document.getElementById('conv_pmiRow').style.display = 'none';
+                document.getElementById('conv_alert').style.display = 'none';
+            }
+            let totalMonthly = monthlyPI + monthlyTax + monthlyIns + monthlyHoa + monthlyPMI;
+            let balance = principal;
+            let yearlyData = [];
+            for (let y = 1; y <= years; y++) {
+                let yearInterest = 0, yearPrincipal = 0, startBalance = balance;
+                for (let m = 1; m <= 12; m++) {
+                    let intMonth = balance * ((rate / 100) / 12);
+                    let prinMonth = monthlyPI - intMonth;
+                    balance = Math.max(balance - prinMonth, 0);
+                    yearInterest += intMonth; yearPrincipal += prinMonth;
+                }
+                yearlyData.push({ year: y, startBalance, principalPaid: yearPrincipal, interestPaid: yearInterest, balance });
+            }
+            let totalLifetimeInterest = Math.max((monthlyPI * years * 12) - principal, 0);
+            let payoffYear = new Date().getFullYear() + years;
+            document.getElementById('conv_totalPayment').innerText = "$" + totalMonthly.toLocaleString('en-US', { maximumFractionDigits: 0 });
+            document.getElementById('conv_piPayment').innerText = "$" + monthlyPI.toFixed(2);
+            document.getElementById('conv_taxPayment').innerText = "$" + monthlyTax.toFixed(2);
+            document.getElementById('conv_insPayment').innerText = "$" + monthlyIns.toFixed(2);
+            document.getElementById('conv_hoaPayment').innerText = "$" + monthlyHoa.toFixed(2);
+            document.getElementById('conv_totalInterest').innerText = "$" + totalLifetimeInterest.toLocaleString('en-US', { maximumFractionDigits: 0 });
+            document.getElementById('conv_payoffYear').innerText = payoffYear;
+            if (googleChartsLoaded) drawPremiumCharts('conv', monthlyPI, monthlyTax, monthlyIns, monthlyHoa, monthlyPMI, yearlyData);
+        }
+        let googleChartsLoaded = false;
+        google.charts.load('current', { 'packages': ['corechart'] });
+        google.charts.setOnLoadCallback(function () {
+            googleChartsLoaded = true;
+            calculateConventional();
+        });
+        function drawPremiumCharts(prefix, pi, tax, ins, hoa, pmi, yearlyData) {
+            document.getElementById(prefix + '_premium_data').style.display = 'block';
+            let pieData = google.visualization.arrayToDataTable([['Category', 'Amount'], ['Principal & Interest', pi], ['Property Tax', tax], ['Home Insurance', ins], ['HOA Fees', hoa], ['PMI / MIP', pmi]]);
+            new google.visualization.PieChart(document.getElementById(prefix + '_piechart')).draw(pieData, { pieHole: 0.5, colors: ['#3b82f6', '#10b981', '#8b5cf6', '#f59e0b', '#ef4444'], legend: 'none', chartArea: { width: '90%', height: '90%' } });
+            let lineData = new google.visualization.DataTable();
+            lineData.addColumn('number', 'Year'); lineData.addColumn('number', 'Balance');
+            lineData.addRows(yearlyData.map(d => [d.year, d.balance]));
+            new google.visualization.LineChart(document.getElementById(prefix + '_linechart')).draw(lineData, { colors: ['#3b82f6'], legend: 'none', hAxis: { title: 'Years' }, vAxis: { title: 'Remaining Balance ($)' }, chartArea: { width: '80%', height: '70%' } });
+            let tbody = document.getElementById(prefix + '_amortization_body');
+            tbody.innerHTML = yearlyData.map(d => `<tr><td>Year ${d.year}</td><td>$${d.startBalance.toLocaleString('en-US',{maximumFractionDigits:0})}</td><td style="color:#10b981;">$${d.principalPaid.toLocaleString('en-US',{maximumFractionDigits:0})}</td><td style="color:#ef4444;">$${d.interestPaid.toLocaleString('en-US',{maximumFractionDigits:0})}</td><td style="font-weight:600;">$${d.balance.toLocaleString('en-US',{maximumFractionDigits:0})}</td></tr>`).join('');
+        }
+    </script>
+</body>
+</html>

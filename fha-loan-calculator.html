@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>FHA Loan Calculator | US Mortgage Hub</title>
+    <meta content="Calculate your FHA loan payment including UFMIP and Annual MIP. Detailed amortization schedule and interactive charts for HUD-backed mortgages." name="description"/>
+    <link rel="stylesheet" href="style.css"/>
+    <script src="https://www.gstatic.com/charts/loader.js"></script>
+</head>
+<body>
+    <nav>
+        <a class="logo" href="index.html">USMortgage<span>Hub</span></a>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="conventional-mortgage-calculator.html">Conventional</a>
+            <a class="active-nav" href="fha-loan-calculator.html">FHA Loan</a>
+            <a href="va-loan-calculator.html">VA Loan</a>
+            <a href="mortgage-refinance-calculator.html">Refinance</a>
+            <a href="mortgage-tax-deduction.html" style="color: #fcd34d;">Tax Benefits</a>
+            <a href="market-updates.html">Market Updates</a>
+        </div>
+    </nav>
+
+    <div class="wrapper">
+        <div class="calc-card">
+            <div class="calc-inputs">
+                <h2>FHA Mortgage Calculator</h2>
+                
+                <div class="state-predictor">
+                    <label>1-Click US State Averages (Auto-fills Taxes &amp; Insurance)</label>
+                    <select id="fha_stateSelect" onchange="applyStateAverages('fha')">
+                        <option value="national">National Average (Default)</option>
+                        <option value="TX">Texas (High Property Tax)</option>
+                        <option value="CA">California (High Insurance, Lower Tax %)</option>
+                        <option value="FL">Florida (High Insurance Risk Area)</option>
+                        <option value="NY">New York (High Property Tax)</option>
+                    </select>
+                </div>
+                
+                <div class="input-group">
+                    <label>Total Home Purchase Price</label>
+                    <div class="input-wrapper">
+                        <span class="input-icon">$</span>
+                        <input id="fha_homePrice" oninput="calculateFHA()" type="number" value="320000"/>
+                    </div>
+                </div>
+                
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
+                    <div class="input-group">
+                        <label>Down Payment Amount</label>
+                        <div class="input-wrapper">
+                            <span class="input-icon">$</span>
+                            <input id="fha_downPaymentAmt" oninput="updateFHAbyAmt()" type="number" value="11200"/>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label>Down Payment (Min 3.5%)</label>
+                        <div class="input-wrapper">
+                            <input id="fha_downPaymentPct" oninput="updateFHAbyPct()" type="number" value="3.5"/>
+                            <span class="input-icon" style="left:auto; right:15px; color: var(--primary);">%</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
+                    <div class="input-group">
+                        <label>FHA Interest Rate</label>
+                        <div class="input-wrapper">
+                            <input id="fha_interestRate" oninput="calculateFHA()" step="0.01" type="number" value="6.25"/>
+                            <span class="input-icon" style="left:auto; right:15px; color: var(--primary);">%</span>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label>Loan Amortization Term</label>
+                        <select id="fha_loanTerm" onchange="calculateFHA()">
+                            <option value="30">30 Years Fixed</option>
+                            <option value="15">15 Years Fixed</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
+                    <div class="input-group">
+                        <label>Annual Property Taxes</label>
+                        <div class="input-wrapper">
+                            <span class="input-icon">$</span>
+                            <input id="fha_propertyTax" oninput="calculateFHA()" type="number" value="3840"/>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label>Annual Home Insurance</label>
+                        <div class="input-wrapper">
+                            <span class="input-icon">$</span>
+                            <input id="fha_homeInsurance" oninput="calculateFHA()" type="number" value="1500"/>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="input-group">
+                    <label>Monthly HOA Fees</label>
+                    <div class="input-wrapper">
+                        <span class="input-icon">$</span>
+                        <input id="fha_hoaFee" oninput="calculateFHA()" type="number" value="0"/>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="calc-results" style="background: #1e293b;">
+                <h3>FHA Estimated Monthly Payment</h3>
+                <div class="result-value" id="fha_totalPayment" style="color:#38bdf8;">$0,000</div>
+                
+                <div class="result-breakdown">
+                    <div class="breakdown-item">
+                        <span>Base Loan Amount</span>
+                        <span class="b-val" id="fha_baseLoan">$0</span>
+                    </div>
+                    <div class="breakdown-item" style="color: #94a3b8; font-size: 0.9rem;">
+                        <span>+ Financed UFMIP (1.75%)</span>
+                        <span class="b-val" id="fha_ufmipAmount">$0</span>
+                    </div>
+                    <div class="breakdown-item" style="border-top: 1px solid rgba(255,255,255,0.2); padding-top: 15px;">
+                        <span><span class="dot dot-pi"></span>Principal &amp; Interest</span>
+                        <span class="b-val" id="fha_piPayment">$0</span>
+                    </div>
+                    <div class="breakdown-item">
+                        <span><span class="dot dot-tax"></span>Property Taxes</span>
+                        <span class="b-val" id="fha_taxPayment">$0</span>
+                    </div>
+                    <div class="breakdown-item">
+                        <span><span class="dot dot-ins"></span>Home Insurance</span>
+                        <span class="b-val" id="fha_insPayment">$0</span>
+                    </div>
+                    <div class="breakdown-item">
+                        <span><span class="dot dot-hoa"></span>HOA Fees</span>
+                        <span class="b-val" id="fha_hoaPayment">$0</span>
+                    </div>
+                    <div class="breakdown-item" style="border-bottom: none;">
+                        <span><span class="dot dot-pmi"></span>FHA Monthly MIP</span>
+                        <span class="b-val" id="fha_mipPayment" style="color:#fca5a5;">$0</span>
+                    </div>
+                </div>
+                
+                <div class="insight-box">
+                    <div>Total Lifetime Interest Paid: <span id="fha_totalInterest" style="color:#fca5a5;">$0</span></div>
+                    <div style="margin-bottom:0;">Estimated Loan Payoff Year: <span id="fha_payoffYear" style="color:#60a5fa;">2056</span></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="premium-data-section" id="fha_premium_data">
+            <div class="charts-grid">
+                <div class="chart-container">
+                    <h4>FHA Monthly Payment Breakdown</h4>
+                    <div id="fha_piechart" style="width: 100%; height: 250px;"></div>
+                </div>
+                <div class="chart-container">
+                    <h4>FHA Balance Reduction (Includes UFMIP)</h4>
+                    <div id="fha_linechart" style="width: 100%; height: 250px;"></div>
+                </div>
+            </div>
+            <div class="amortization-wrapper">
+                <h4>Yearly Amortization Schedule</h4>
+                <table class="amortization-table">
+                    <thead>
+                        <tr>
+                            <th>Year</th>
+                            <th>Beginning Balance</th>
+                            <th>Principal Paid</th>
+                            <th>Interest Paid</th>
+                            <th>Ending Balance</th>
+                        </tr>
+                    </thead>
+                    <tbody id="fha_amortization_body"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="seo-article">
+            <div class="article-header">
+                <h1>Mastering the FHA Mortgage Mechanics and Premium Structures</h1>
+                <div class="author-meta">Detailed analysis of Department of Housing and Urban Development (HUD) underwriting guidelines and DTI limits.</div>
+            </div>
+
+            <p>The Federal Housing Administration (FHA) loan program operates as a fundamental pillar of the American housing market, explicitly engineered to promote homeownership among individuals who may not possess the capability to qualify for stringent conventional lending standards. Since its original inception, the FHA has successfully insured millions of residential mortgages, providing a vital pathway to equity creation and generational wealth for first-time buyers, low-to-moderate-income families, and borrowers actively recovering from past credit distress. However, the financial architecture and insurance requirements of an FHA loan are distinctly different from a standard conventional loan, requiring highly specific calculations generated by US Mortgage Hub to determine your true, final monthly obligation.</p>
+
+            <h2>The Operational Mechanics of Government Backing</h2>
+            <p>It remains a highly common misconception among consumers that the federal government lends money directly to homebuyers. In absolute reality, the FHA operates purely as an insurance entity functioning under the massive umbrella of the Department of Housing and Urban Development (HUD). You must still secure your mortgage financing through an approved private lender, such as a major national banking institution or a highly localized mortgage broker. The critical role of the FHA is to provide a comprehensive, federally backed guarantee to that specific private lender: if you, the borrower, default on the mortgage agreement, the FHA will reimburse the lender for their extensive financial loss.</p>
+            
+            <p>Because the private lending institution faces virtually zero risk of catastrophic financial loss thanks to this federal backing, they are highly incentivized to drastically relax their standard qualification parameters. This unique dynamic is exactly what allows FHA loans to offer features that are mathematically impossible to find in the private conventional market. Most notably, borrowers can successfully secure an FHA loan with a down payment representing as little as 3.5% of the purchase price while holding a FICO credit score of merely 580. For those individuals dealing with severe credit issues with scores dipping down to 500, FHA loans remain theoretically attainable, provided the borrower can supply a much larger 10% down payment to offset the extreme risk profile.</p>
+
+            <h2>The Dual-Layer Mortgage Insurance System Explained</h2>
+            <p>The vast flexibility and nationwide accessibility of the FHA program come attached to a specific, unavoidable financial cost. To continually fund the massive insurance pool that protects these private lenders, HUD mandates a rigid, two-tiered mortgage insurance structure. Our sophisticated calculator is specifically programmed to automatically execute these exact calculations, as failing to accurately account for both of them will instantly result in a severely inaccurate payment estimation that could ruin a household budget.</p>
+
+            <h3>1. The Upfront Mortgage Insurance Premium (UFMIP) Assessment</h3>
+            <p>Every single FHA purchase loan requires the mandatory payment of an Upfront Mortgage Insurance Premium. According to the current operational HUD guidelines, this massive fee is definitively assessed at 1.75% of your base loan amount. For example, if you negotiate a home purchase and your required loan amount after depositing the down payment is exactly $300,000, the UFMIP assessment is exactly $5,250. While this fee can theoretically be paid with out-of-pocket cash at the closing table, standard US market practice is to finance this entire amount by rolling it directly into the total loan balance. Our calculator flawlessly mirrors this market reality, automatically extracting your base loan, calculating the 1.75% fee, aggressively adding it to your total principal, and then amortizing the interest over that completely new, higher total balance.</p>
+
+            <h3>2. The Annual Mortgage Insurance Premium (MIP) Calculation</h3>
+            <p>In direct addition to the upfront fee, all FHA borrowers are assessed an ongoing annual premium, which is subsequently divided by twelve and forcibly added to the monthly mortgage payment alongside standard property taxes and homeowner's insurance. The exact percentage of this annual MIP is meticulously determined by three highly specific variables: your chosen loan term (typically 15 years versus 30 years), your total borrowed loan amount, and your final Loan-to-Value (LTV) ratio, which is directly dictated by the size of your down payment.</p>
+
+            <p>For the vast, overwhelming majority of FHA borrowers utilizing a standard 30-year term equipped with the absolute minimum 3.5% down payment, the annual MIP rate is currently calculated at 0.55% of the outstanding loan balance. Our calculator continuously and flawlessly applies the appropriate HUD-defined MIP metrics to ensure your total PITI estimate is structurally sound and mathematically perfect.</p>
+        </div>
+    </div>
+
+    <footer>
+        <a class="footer-logo" href="index.html">USMortgage<span>Hub</span></a>
+        <div class="nav-links" style="justify-content: center; margin: 30px 0;">
+            <a href="about-us.html">About Us</a>
+            <a href="privacy-policy.html">Privacy Policy</a>
+            <a href="terms.html">Terms of Service</a>
+            <a href="disclaimer.html">Disclaimer</a>
+            <a href="contact-us.html">Contact Us</a>
+        </div>
+        <div class="legal-text">
+            The extensive calculations, complex scenarios, and financial estimations provided by this software platform are designed strictly for educational and informational purposes only. They absolutely do not constitute a binding offer of credit, a formal commitment to lend, or certified financial, legal, or tax advice. Lending guidelines established by the FHFA, FHA, the VA, and the IRS are subject to immediate modification by federal legislative action without notice. Users must consult with a state-licensed mortgage originator, a Certified Public Accountant (CPA), or a Certified Financial Planner (CFP) prior to executing any binding real estate contract or massive debt restructuring agreement.
+            <br/><br/>
+            &copy; 2026 US Mortgage Hub. All rights reserved.
+        </div>
+    </footer>
+
+    <script>
+        const stateData = { "national": { tax: 3840, ins: 1500 }, "TX": { tax: 7500, ins: 2500 }, "CA": { tax: 4200, ins: 3200 }, "FL": { tax: 4500, ins: 4500 }, "NY": { tax: 8500, ins: 1900 } };
+        function applyStateAverages(prefix) {
+            let data = stateData[document.getElementById(prefix + '_stateSelect').value] || stateData["national"];
+            document.getElementById(prefix + '_propertyTax').value = data.tax;
+            document.getElementById(prefix + '_homeInsurance').value = data.ins;
+            calculateFHA();
+        }
+        function calculatePI(P, r_annual, n_years) {
+            if (P <= 0 || r_annual <= 0 || n_years <= 0) return 0;
+            let r = (r_annual / 100) / 12, n = n_years * 12;
+            return P * (r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1);
+        }
+        function updateFHAbyAmt() {
+            let price = parseFloat(document.getElementById('fha_homePrice').value) || 0;
+            let amt = parseFloat(document.getElementById('fha_downPaymentAmt').value) || 0;
+            if (price > 0) document.getElementById('fha_downPaymentPct').value = ((amt / price) * 100).toFixed(2);
+            calculateFHA();
+        }
+        function updateFHAbyPct() {
+            let price = parseFloat(document.getElementById('fha_homePrice').value) || 0;
+            let pct = parseFloat(document.getElementById('fha_downPaymentPct').value) || 0;
+            document.getElementById('fha_downPaymentAmt').value = ((price * pct) / 100).toFixed(0);
+            calculateFHA();
+        }
+        function calculateFHA() {
+            let price = parseFloat(document.getElementById('fha_homePrice').value) || 0;
+            let dpAmt = parseFloat(document.getElementById('fha_downPaymentAmt').value) || 0;
+            let dpPct = parseFloat(document.getElementById('fha_downPaymentPct').value) || 0;
+            let rate = parseFloat(document.getElementById('fha_interestRate').value) || 0;
+            let years = parseInt(document.getElementById('fha_loanTerm').value) || 30;
+            let annualTax = parseFloat(document.getElementById('fha_propertyTax').value) || 0;
+            let annualIns = parseFloat(document.getElementById('fha_homeInsurance').value) || 0;
+            let monthlyHoa = parseFloat(document.getElementById('fha_hoaFee').value) || 0;
+            let baseLoan = Math.max(price - dpAmt, 0);
+            let ufmip = baseLoan * 0.0175;
+            let totalLoan = baseLoan + ufmip;
+            let monthlyPI = calculatePI(totalLoan, rate, years);
+            let mipAnnualRate = (years === 15) ? (dpPct >= 10 ? 0.0015 : 0.0040) : (dpPct >= 10 ? 0.0050 : 0.0055);
+            let monthlyMIP = (totalLoan * mipAnnualRate) / 12;
+            let monthlyTax = annualTax / 12, monthlyIns = annualIns / 12;
+            let totalMonthly = monthlyPI + monthlyMIP + monthlyTax + monthlyIns + monthlyHoa;
+            let balance = totalLoan, yearlyData = [];
+            for (let y = 1; y <= years; y++) {
+                let yearInterest = 0, yearPrincipal = 0, startBalance = balance;
+                for (let m = 1; m <= 12; m++) {
+                    let intMonth = balance * ((rate / 100) / 12);
+                    let prinMonth = monthlyPI - intMonth;
+                    balance = Math.max(balance - prinMonth, 0);
+                    yearInterest += intMonth; yearPrincipal += prinMonth;
+                }
+                yearlyData.push({ year: y, startBalance, principalPaid: yearPrincipal, interestPaid: yearInterest, balance });
+            }
+            let totalLifetimeInterest = Math.max((monthlyPI * years * 12) - totalLoan, 0);
+            let payoffYear = new Date().getFullYear() + years;
+            document.getElementById('fha_totalPayment').innerText = "$" + totalMonthly.toLocaleString('en-US', { maximumFractionDigits: 0 });
+            document.getElementById('fha_baseLoan').innerText = "$" + baseLoan.toLocaleString('en-US', { maximumFractionDigits: 0 });
+            document.getElementById('fha_ufmipAmount').innerText = "$" + ufmip.toLocaleString('en-US', { maximumFractionDigits: 0 });
+            document.getElementById('fha_piPayment').innerText = "$" + monthlyPI.toFixed(2);
+            document.getElementById('fha_mipPayment').innerText = "$" + monthlyMIP.toFixed(2);
+            document.getElementById('fha_taxPayment').innerText = "$" + monthlyTax.toFixed(2);
+            document.getElementById('fha_insPayment').innerText = "$" + monthlyIns.toFixed(2);
+            document.getElementById('fha_hoaPayment').innerText = "$" + monthlyHoa.toFixed(2);
+            document.getElementById('fha_totalInterest').innerText = "$" + totalLifetimeInterest.toLocaleString('en-US', { maximumFractionDigits: 0 });
+            document.getElementById('fha_payoffYear').innerText = payoffYear;
+            if (googleChartsLoaded) drawPremiumCharts('fha', monthlyPI, monthlyTax, monthlyIns, monthlyHoa, monthlyMIP, yearlyData);
+        }
+        let googleChartsLoaded = false;
+        google.charts.load('current', { 'packages': ['corechart'] });
+        google.charts.setOnLoadCallback(function () { googleChartsLoaded = true; calculateFHA(); });
+        function drawPremiumCharts(prefix, pi, tax, ins, hoa, pmi, yearlyData) {
+            document.getElementById(prefix + '_premium_data').style.display = 'block';
+            let pieData = google.visualization.arrayToDataTable([['Category', 'Amount'], ['Principal & Interest', pi], ['Property Tax', tax], ['Home Insurance', ins], ['HOA Fees', hoa], ['PMI / MIP', pmi]]);
+            new google.visualization.PieChart(document.getElementById(prefix + '_piechart')).draw(pieData, { pieHole: 0.5, colors: ['#3b82f6', '#10b981', '#8b5cf6', '#f59e0b', '#ef4444'], legend: 'none', chartArea: { width: '90%', height: '90%' } });
+            let lineData = new google.visualization.DataTable();
+            lineData.addColumn('number', 'Year'); lineData.addColumn('number', 'Balance');
+            lineData.addRows(yearlyData.map(d => [d.year, d.balance]));
+            new google.visualization.LineChart(document.getElementById(prefix + '_linechart')).draw(lineData, { colors: ['#3b82f6'], legend: 'none', hAxis: { title: 'Years' }, vAxis: { title: 'Remaining Balance ($)' }, chartArea: { width: '80%', height: '70%' } });
+            document.getElementById(prefix + '_amortization_body').innerHTML = yearlyData.map(d => `<tr><td>Year ${d.year}</td><td>$${d.startBalance.toLocaleString('en-US',{maximumFractionDigits:0})}</td><td style="color:#10b981;">$${d.principalPaid.toLocaleString('en-US',{maximumFractionDigits:0})}</td><td style="color:#ef4444;">$${d.interestPaid.toLocaleString('en-US',{maximumFractionDigits:0})}</td><td style="font-weight:600;">$${d.balance.toLocaleString('en-US',{maximumFractionDigits:0})}</td></tr>`).join('');
+        }
+    </script>
+</body>
+</html>

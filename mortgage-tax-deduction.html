@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Mortgage Tax Deduction Calculator | US Mortgage Hub</title>
+    <meta content="Calculate your IRS Schedule A mortgage interest deduction and SALT cap savings. Estimate your true annual federal tax benefit from homeownership." name="description"/>
+    <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+    <nav>
+        <a class="logo" href="index.html">USMortgage<span>Hub</span></a>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="conventional-mortgage-calculator.html">Conventional</a>
+            <a href="fha-loan-calculator.html">FHA Loan</a>
+            <a href="va-loan-calculator.html">VA Loan</a>
+            <a href="mortgage-refinance-calculator.html">Refinance</a>
+            <a class="active-nav" href="mortgage-tax-deduction.html" style="color: #fcd34d;">Tax Benefits</a>
+            <a href="market-updates.html">Market Updates</a>
+        </div>
+    </nav>
+
+    <div class="wrapper">
+        <div class="calc-card">
+            <div class="calc-inputs">
+                <h2>US Mortgage Tax Deduction Estimator</h2>
+                
+                <div class="input-group">
+                    <label>Estimated Annual Mortgage Interest Paid</label>
+                    <div class="input-wrapper">
+                        <span class="input-icon">$</span>
+                        <input id="tax_annualInterest" oninput="calculateTax()" type="number" value="24000"/>
+                    </div>
+                </div>
+                
+                <div class="input-group">
+                    <label>Annual Property Taxes Paid</label>
+                    <div class="input-wrapper">
+                        <span class="input-icon">$</span>
+                        <input id="tax_annualPropertyTax" oninput="calculateTax()" type="number" value="6500"/>
+                    </div>
+                    <div style="font-size: 0.85rem; color: #64748b; margin-top: 5px;">Note: IRS SALT limit restricts total state/local tax deductions to $10,000.</div>
+                </div>
+                
+                <div class="input-group">
+                    <label>Your Estimated Federal Marginal Tax Bracket</label>
+                    <select id="tax_marginalRate" onchange="calculateTax()">
+                        <option value="0.10">10% Bracket</option>
+                        <option value="0.12">12% Bracket</option>
+                        <option selected value="0.22">22% Bracket</option>
+                        <option value="0.24">24% Bracket</option>
+                        <option value="0.32">32% Bracket</option>
+                        <option value="0.35">35% Bracket</option>
+                        <option value="0.37">37% Bracket (Top Earner)</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="calc-results" style="background: #047857;">
+                <h3>Estimated Annual Tax Savings</h3>
+                <div class="result-value" id="tax_annualSavings" style="color:#a7f3d0;">$0,000</div>
+                <p style="margin-top: -20px; margin-bottom: 20px; color: #d1fae5; font-weight: 500;">If Itemizing Deductions on Schedule A</p>
+                
+                <div class="result-breakdown">
+                    <div class="breakdown-item">
+                        <span>Eligible Interest Deduction</span>
+                        <span class="b-val" id="tax_eligibleInterest">$0</span>
+                    </div>
+                    <div class="breakdown-item">
+                        <span>Eligible Property Tax (SALT)</span>
+                        <span class="b-val" id="tax_eligibleSALT">$0</span>
+                    </div>
+                    <div class="breakdown-item" style="border-top: 1px solid rgba(255,255,255,0.2); padding-top: 15px; border-bottom: none;">
+                        <span>Total Itemized Housing Deduction</span>
+                        <span class="b-val" id="tax_totalDeduction" style="color: #6ee7b7;">$0</span>
+                    </div>
+                </div>
+                
+                <div style="background: white; color: var(--primary); padding: 15px; border-radius: 10px; margin-top: 25px; width: 100%; max-width: 350px; box-sizing: border-box;">
+                    <div style="font-size: 0.9rem; font-weight: 700; text-transform: uppercase; color: #64748b; margin-bottom: 5px;">Effective Monthly Cash Return</div>
+                    <div style="font-size: 1.8rem; font-weight: 800; color: #047857;"><span id="tax_monthlySavings">$0</span> / mo</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="seo-article">
+            <div class="article-header">
+                <h1>The US Tax Code and Real Estate: Maximizing Deductions and Exploring Reverse Mortgages</h1>
+                <div class="author-meta">Comprehensive financial review of IRS guidelines regarding homeownership, Capital Gains, and Senior Equity Extraction.</div>
+            </div>
+
+            <p>Purchasing a home in the United States represents the largest financial transaction in the lives of most citizens. Recognizing the massive economic importance of the housing sector, the federal government, operating through the Internal Revenue Service (IRS), has deliberately engineered the US Tax Code to highly incentivize real estate acquisition. These incentives manifest primarily in the form of massive tax deductions that can radically lower your total federal income tax liability. Furthermore, the federal government provides specialized programs for senior citizens, commonly known as Reverse Mortgages, allowing them to extract tax-free cash from their homes without ever executing a traditional sale.</p>
+
+            <h2>The Power of the Mortgage Interest Deduction (MID)</h2>
+            <p>The absolute crown jewel of real estate tax benefits in the United States is the Mortgage Interest Deduction (MID). In the early years of a standard 30-year fixed-rate mortgage, the overwhelming majority of your monthly payment goes directly toward paying the lender's interest rather than reducing the principal. The IRS heavily softens this financial blow by allowing you to legally deduct that exact interest payment from your taxable income, provided you choose to itemize your deductions on Schedule A of your tax return rather than claiming the standard deduction.</p>
+            
+            <p>Under current US tax law, homeowners can legally deduct the interest paid on up to $750,000 of mortgage debt utilized to acquire, build, or substantially improve a primary residence or a designated second home. (Note: For mortgages established prior to December 15, 2017, this limit is grandfathered in at $1,000,000). If you pay $24,000 in mortgage interest over the course of the calendar year and you sit comfortably within the 22% federal tax bracket, successfully itemizing that specific interest generates exactly $5,280 in pure tax savings, effectively reducing your true monthly housing cost by $440.</p>
+
+            <h2>The SALT Cap: State and Local Taxes</h2>
+            <p>In addition to massive mortgage interest, American homeowners are legally permitted to deduct the expensive property taxes they pay directly to their county or municipal governments. This specific deduction falls under the broader category of State and Local Taxes, universally referred to by CPAs as the SALT deduction. The SALT deduction allows you to bundle your local property taxes alongside your state income taxes.</p>
+            
+            <p>However, an extremely critical limitation exists that high-net-worth borrowers must understand. Current federal legislation places a strict, hard cap on the total SALT deduction at exactly $10,000 per year ($5,000 if married but filing separately). Therefore, if you purchase a highly expensive property in New Jersey or New York and receive a $15,000 annual property tax bill, you can legally only deduct a maximum of $10,000 of that expense on your federal tax return. Our software calculator is specifically programmed to automatically enforce this strict $10,000 IRS ceiling to ensure your tax savings estimation remains completely accurate and legally sound.</p>
+
+            <h2>Selling Your Home: Section 121 Capital Gains Exclusion</h2>
+            <p>The incredible tax benefits of US real estate do not abruptly stop while you reside in the home; they provide massive financial protection when you decide to sell the property. When you sell an asset for more than you paid for it, the federal government typically levies a heavy Capital Gains Tax on the profit. However, primary residences are granted a massive, almost unprecedented legislative loophole known as the Section 121 Exclusion.</p>
+
+            <p>Under Section 121, if you have owned the physical property and utilized it as your absolute primary residence for at least two out of the five years immediately preceding the legal sale, you can completely and legally exclude up to $250,000 of pure profit from capital gains taxes if you file as a single taxpayer. If you are legally married and filing a joint tax return, that massive exclusion doubles to an incredible $500,000 of completely tax-free profit. This specific tax shelter is the absolute primary mechanism through which average middle-class American families successfully build massive, generational wealth and rapidly upgrade their living standards.</p>
+
+            <h2>Reverse Tax: Understanding the Reverse Mortgage (HECM)</h2>
+            <p>A highly misunderstood concept in the American financial sector is the concept of a reverse tax or, correctly termed, the Reverse Mortgage. The most common and federally insured version of this product is the Home Equity Conversion Mortgage (HECM), exclusively designed by the Federal Housing Administration for senior citizens aged 62 and older who possess massive amounts of equity in their homes.</p>
+            
+            <p>In a standard, forward mortgage, you pay the bank every single month to slowly build equity. In a Reverse Mortgage, the exact opposite occurs: the bank pays you, successfully converting your illiquid home equity into liquid cash. Because the cash you receive is technically structured as a loan advance against your own home equity rather than traditional earned income, the money generated from a reverse mortgage is 100% tax-free. It is not subject to standard federal income tax, and highly critically, it does not negatively impact your Social Security benefits or standard Medicare eligibility.</p>
+        </div>
+    </div>
+
+    <footer>
+        <a class="footer-logo" href="index.html">USMortgage<span>Hub</span></a>
+        <div class="nav-links" style="justify-content: center; margin: 30px 0;">
+            <a href="about-us.html">About Us</a>
+            <a href="privacy-policy.html">Privacy Policy</a>
+            <a href="terms.html">Terms of Service</a>
+            <a href="disclaimer.html">Disclaimer</a>
+            <a href="contact-us.html">Contact Us</a>
+        </div>
+        <div class="legal-text">
+            The extensive calculations, complex scenarios, and financial estimations provided by this software platform are designed strictly for educational and informational purposes only. They absolutely do not constitute a binding offer of credit, a formal commitment to lend, or certified financial, legal, or tax advice. Lending guidelines established by the FHFA, FHA, the VA, and the IRS are subject to immediate modification by federal legislative action without notice. Users must consult with a state-licensed mortgage originator, a Certified Public Accountant (CPA), or a Certified Financial Planner (CFP) prior to executing any binding real estate contract or massive debt restructuring agreement.
+            <br/><br/>
+            &copy; 2026 US Mortgage Hub. All rights reserved.
+        </div>
+    </footer>
+
+    <script>
+        function calculateTax() {
+            let interest = parseFloat(document.getElementById('tax_annualInterest').value) || 0;
+            let propertyTax = parseFloat(document.getElementById('tax_annualPropertyTax').value) || 0;
+            let marginalRate = parseFloat(document.getElementById('tax_marginalRate').value) || 0.22;
+            let eligibleSALT = Math.min(propertyTax, 10000);
+            let totalDeduction = interest + eligibleSALT;
+            let annualSavings = totalDeduction * marginalRate;
+            let monthlySavings = annualSavings / 12;
+            document.getElementById('tax_annualSavings').innerText = "$" + annualSavings.toLocaleString('en-US', { maximumFractionDigits: 0 });
+            document.getElementById('tax_eligibleInterest').innerText = "$" + interest.toLocaleString('en-US', { maximumFractionDigits: 0 });
+            document.getElementById('tax_eligibleSALT').innerText = "$" + eligibleSALT.toLocaleString('en-US', { maximumFractionDigits: 0 });
+            document.getElementById('tax_totalDeduction').innerText = "$" + totalDeduction.toLocaleString('en-US', { maximumFractionDigits: 0 });
+            document.getElementById('tax_monthlySavings').innerText = "$" + monthlySavings.toLocaleString('en-US', { maximumFractionDigits: 0 });
+        }
+        calculateTax();
+    </script>
+</body>
+</html>
